@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوتيك السعادة | المتجر</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- الشريط العلوي -->
+    <header class="main-header">
+        <div class="header-right"><i class="fa-solid fa-bars"></i></div>
+        <div class="header-center">
+            <h1 id="store-name-display">بوتيك السعادة</h1>
+        </div>
+        <div class="header-left">
+            <a href="admin.html" style="color: var(--gold); font-size: 14px; text-decoration: none;"><i class="fa-solid fa-user-gear"></i> الإدارة</a>
+        </div>
+    </header>
+
+    <main id="home-page" class="page active" style="padding-top: 70px; padding-bottom: 50px;">
+        
+        <!-- البنر -->
+        <div class="hero-slider" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://via.placeholder.com/600x300/111/333?text=Romantic+Banner') center/cover; height: 200px; display: flex; align-items: center; padding: 20px; border-bottom: 2px solid var(--pink);">
+            <div>
+                <h2 style="color: var(--gold); text-shadow: 0 0 10px var(--gold-glow);">لأن سعادتكم تستحق الأفضل</h2>
+                <p style="color: #aaa; margin-top: 10px;">اكتشف عالم المتعة .. منتجات عالية الجودة</p>
+            </div>
+        </div>
+
+        <!-- الأقسام -->
+        <div class="section-title" style="padding: 15px;"><h3 style="color: var(--gold);">الأقسام</h3></div>
+        <div id="categories-container" class="categories-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 15px;"></div>
+
+        <!-- المنتجات -->
+        <div class="section-title" style="padding: 15px; margin-top: 10px;"><h3 style="color: var(--gold);">المنتجات الأكثر مبيعاً 🔥</h3></div>
+        <div id="products-container" class="products-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px;"></div>
+
+    </main>
+
+    <script src="js/db.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
