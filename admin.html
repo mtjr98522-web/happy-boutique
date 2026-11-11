@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم | بوتيك السعادة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <!-- القائمة الجانبية للوحة التحكم -->
+    <aside class="sidebar">
+        <h2>لوحة التحكم</h2>
+        <ul>
+            <li class="active" onclick="showAdminTab('stats')"><i class="fa-solid fa-chart-line"></i> الإحصائيات</li>
+            <li onclick="showAdminTab('products')"><i class="fa-solid fa-box"></i> المنتجات</li>
+            <li onclick="showAdminTab('categories')"><i class="fa-solid fa-layer-group"></i> الأقسام</li>
+            <li onclick="showAdminTab('settings')"><i class="fa-solid fa-gear"></i> الإعدادات</li>
+        </ul>
+        <a href="index.html" class="back-to-store"><i class="fa-solid fa-store"></i> العودة للمتجر</a>
+    </aside>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="admin-content">
+        
+        <!-- تبويب الإحصائيات -->
+        <section id="tab-stats" class="admin-tab active">
+            <h2>إحصائيات المتجر</h2>
+            <div class="stats-cards" id="stats-container">
+                <!-- يتم تعبئتها بالجافاسكريبت -->
+            </div>
+        </section>
+
+        <!-- تبويب المنتجات -->
+        <section id="tab-products" class="admin-tab">
+            <div class="tab-header">
+                <h2>إدارة المنتجات</h2>
+                <button class="btn-primary" onclick="openProductModal()">إضافة منتج جديد +</button>
+            </div>
+            <table class="data-table" id="products-table">
+                <thead>
+                    <tr>
+                        <th>الصورة</th>
+                        <th>اسم المنتج</th>
+                        <th>السعر</th>
+                        <th>القسم</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <!-- تبويب الأقسام -->
+        <section id="tab-categories" class="admin-tab">
+            <div class="tab-header">
+                <h2>إدارة الأقسام</h2>
+                <button class="btn-primary" onclick="openCategoryModal()">إضافة قسم جديد +</button>
+            </div>
+            <table class="data-table" id="categories-table">
+                <thead>
+                    <tr>
+                        <th>الصورة</th>
+                        <th>اسم القسم</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <!-- تبويب الإعدادات -->
+        <section id="tab-settings" class="admin-tab">
+            <h2>إعدادات المتجر</h2>
+            <form id="settings-form" class="settings-form">
+                <div class="form-group">
+                    <label>اسم المتجر</label>
+                    <input type="text" id="set-name" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف للتواصل</label>
+                    <input type="text" id="set-phone" required>
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="set-email" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم الواتساب (مع رمز الدولة)</label>
+                    <input type="text" id="set-whatsapp" required>
+                </div>
+                <button type="submit" class="btn-primary">حفظ التعديلات</button>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- النوافذ المنبثقة (Modals) -->
+    <!-- مودال المنتج -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="prod-modal-title">إضافة منتج</h3>
+            <input type="hidden" id="prod-id">
+            <input type="text" id="prod-name" placeholder="اسم المنتج" required>
+            <input type="number" id="prod-price" placeholder="السعر" required>
+            <input type="number" id="prod-oldprice" placeholder="السعر قبل الخصم (اختياري)">
+            <select id="prod-category"></select>
+            <input type="text" id="prod-image" placeholder="رابط الصورة (URL)" required>
+            <textarea id="prod-desc" placeholder="وصف المنتج"></textarea>
+            <div class="modal-actions">
+                <button class="btn-outline" onclick="closeModal('product-modal')">إلغاء</button>
+                <button class="btn-primary" onclick="saveProduct()">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال القسم -->
+    <div id="category-modal" class="modal">
+        <div class="modal-content">
+            <h3>إضافة قسم</h3>
+            <input type="hidden" id="cat-id">
+            <input type="text" id="cat-name" placeholder="اسم القسم" required>
+            <input type="text" id="cat-image" placeholder="رابط الصورة (URL)" required>
+            <div class="modal-actions">
+                <button class="btn-outline" onclick="closeModal('category-modal')">إلغاء</button>
+                <button class="btn-primary" onclick="saveCategory()">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/db.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
