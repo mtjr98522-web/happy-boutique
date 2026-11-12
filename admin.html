@@ -45,7 +45,7 @@
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول (مخفية افتراضياً إذا تم تسجيل الدخول) -->
+    <!-- شاشة تسجيل الدخول -->
     <div id="login-screen">
         <div class="login-box">
             <img src="https://via.placeholder.com/60/000000/D4AF37?text=Logo" style="border-radius:50%; margin-bottom:15px;">
@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    <!-- محتوى لوحة التحكم (مخفي حتى يتم تسجيل الدخول) -->
+    <!-- محتوى لوحة التحكم -->
     <div id="admin-app" style="display: none;">
         <!-- القائمة الجانبية -->
         <aside class="sidebar">
@@ -66,10 +66,10 @@
                 <h2>بوتيك السعادة</h2>
             </div>
             <ul class="nav-links">
-                <li class="active" onclick="switchTab('dashboard')"><i class="fa-solid fa-house"></i> الرئيسية</li>
-                <li onclick="switchTab('products')"><i class="fa-solid fa-box"></i> المنتجات</li>
-                <li onclick="switchTab('categories')"><i class="fa-solid fa-layer-group"></i> الأقسام</li>
-                <li onclick="switchTab('settings')"><i class="fa-solid fa-gear"></i> الإعدادات</li>
+                <li class="active" onclick="switchTab('dashboard', this)"><i class="fa-solid fa-house"></i> الرئيسية</li>
+                <li onclick="switchTab('products', this)"><i class="fa-solid fa-box"></i> المنتجات</li>
+                <li onclick="switchTab('categories', this)"><i class="fa-solid fa-layer-group"></i> الأقسام</li>
+                <li onclick="switchTab('settings', this)"><i class="fa-solid fa-gear"></i> الإعدادات</li>
                 <li onclick="logout()" style="color: #ff5252; margin-top: 20px;"><i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج</li>
             </ul>
             <div class="sidebar-footer">
@@ -86,7 +86,8 @@
                 </div>
                 <div class="header-actions">
                     <div class="icon-btn"><i class="fa-regular fa-bell"></i></div>
-                    <div class="admin-profile">
+                    <!-- تمت إضافة onclick هنا لفتح صفحة المدير -->
+                    <div class="admin-profile" onclick="switchTab('profile', this)" style="cursor:pointer;">
                         <img src="https://via.placeholder.com/40/000000/D4AF37?text=A" alt="Admin">
                         <div><h4>مدير المتجر</h4><p>بوتيك السعادة</p></div>
                     </div>
@@ -97,7 +98,7 @@
             <section id="dashboard-section" class="page-section active">
                 <h2 class="section-title">لوحة التحكم</h2>
                 
-                <!-- البطاقات الإحصائية (تم تصفيرها) -->
+                <!-- البطاقات الإحصائية -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon pink"><i class="fa-solid fa-box"></i></div>
@@ -189,6 +190,23 @@
                     <button type="submit" class="btn-primary">حفظ التعديلات</button>
                 </form>
             </section>
+
+            <!-- قسم حساب المدير (تمت إضافته هنا) -->
+            <section id="profile-section" class="page-section">
+                <h2 class="section-title">إدارة حساب المدير</h2>
+                <form id="profile-form" class="settings-form">
+                    <div class="form-group">
+                        <label>اسم المستخدم الجديد</label>
+                        <input type="text" id="prof-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>كلمة المرور الجديدة</label>
+                        <input type="password" id="prof-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">حفظ بيانات الدخول</button>
+                </form>
+            </section>
+
         </main>
     </div>
 
