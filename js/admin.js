@@ -17,13 +17,11 @@ window.checkLogin = function() {
     const creds = getAdminCredentials();
 
     if (user === creds.username && pass === creds.password) {
-        // نجاح الدخول
         sessionStorage.setItem('isAdminLoggedIn', 'true');
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('admin-app').style.display = 'block';
         initDashboard();
     } else {
-        // فشل الدخول
         document.getElementById('login-error').style.display = 'block';
     }
 }
@@ -46,19 +44,17 @@ document.addEventListener("DOMContentLoaded", () => {
 function initDashboard() {
     let storeData = getStoreData();
     
+    // تصفير الإحصائيات
     document.getElementById('stat-products').innerText = storeData.products.length;
     document.getElementById('stat-sales').innerHTML = "0 <span>ريال</span>";
     document.getElementById('stat-orders').innerText = "0";
     document.getElementById('stat-customers').innerText = "0";
 
-    // رسم المخطط البياني (مبيعات صفرية)
+    // رسم المخطط البياني
     const ctxSales = document.getElementById('salesChart').getContext('2d');
     new Chart(ctxSales, {
         type: 'bar',
-        data: {
-            labels: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
-            datasets: [{ label: 'المبيعات', data: [0, 0, 0, 0, 0, 0, 0], backgroundColor: '#333', borderRadius: 5 }]
-        },
+        data: { labels: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'], datasets: [{ label: 'المبيعات', data: [0, 0, 0, 0, 0, 0, 0], backgroundColor: '#333', borderRadius: 5 }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#333' }, ticks: { color: '#aaa' }, beginAtZero: true }, x: { grid: { display: false }, ticks: { color: '#aaa' } } } }
     });
 
@@ -71,7 +67,7 @@ function initDashboard() {
     });
 
     renderAdminTables(storeData);
-    loadProfileData(); // تحميل بيانات المدير في الحقول
+    loadProfileData(); 
 }
 
 // دالة مساعدة لتحديث الجداول
@@ -115,17 +111,26 @@ function renderAdminTables(storeData) {
     }
 }
 
-// 3. التنقل بين التبويبات
-window.switchTab = function(tabId) {
+// 3. التنقل بين التبويبات (تم تحديثها لتقبل الزر)
+window.switchTab = function(tabId, element) {
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-links li').forEach(l => l.classList.remove('active'));
     
     document.getElementById(`${tabId}-section`).classList.add('active');
-    if(event && event.currentTarget) {
-        event.currentTarget.classList.add('active');
+    
+    // إذا تم تمرير العنصر (الزر)، نقوم بتلوينه
+    if(element) {
+        element.classList.add('active');
+    } else {
+        // إذا لم يتم تمرير عنصر (مثل الضغط على صورة المدير)، نبحث عن الزر في القائمة الجانبية ونلونه
+        const navLinks = document.querySelectorAll('.nav-links li');
+        navLinks.forEach(li => {
+            if(li.getAttribute('onclick') && li.getAttribute('onclick').includes(tabId)) {
+                li.classList.add('active');
+            }
+        });
     }
     
-    // إذا فتحنا قسم حساب المدير، نقوم بتحديث الحقول
     if(tabId === 'profile') loadProfileData();
 };
 
@@ -184,7 +189,7 @@ document.getElementById('settings-form')?.addEventListener('submit', (e) => {
     alert('تم حفظ الإعدادات بنجاح!');
 });
 
-// 6. إدارة حساب المدير (جديد)
+// 6. إدارة حساب المدير
 function loadProfileData() {
     const creds = getAdminCredentials();
     const userField = document.getElementById('prof-username');
