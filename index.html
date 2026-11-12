@@ -3,117 +3,407 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوتيك السعادة | المتجر</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <title>بوتيك السعادة | Boutique Al Saadah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-dark: #0a0a0a; --bg-card: #151515; --gold: #d4af37; --gold-glow: rgba(212,175,55,0.3); --pink: #e91e63; --pink-glow: rgba(233,30,99,0.4); }
+        :root { --bg-dark: #050505; --bg-card: #111; --gold: #d4af37; --pink: #e91e63; --pink-glow: rgba(233,30,99,0.5); --text-muted: #aaa; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
         body { background-color: var(--bg-dark); color: #fff; padding-top: 60px; padding-bottom: 70px; overflow-x: hidden; }
         
         /* Header */
         .main-header { position: fixed; top: 0; left: 0; width: 100%; height: 60px; background: rgba(10,10,10,0.95); border-bottom: 1px solid var(--gold); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 1000; }
         .header-center h1 { font-size: 18px; color: var(--gold); }
+        .header-icon { font-size: 20px; color: var(--gold); cursor: pointer; position: relative; }
+        .badge { position: absolute; top: -8px; right: -10px; background: var(--pink); color: white; font-size: 11px; padding: 2px 6px; border-radius: 50%; }
         
-        /* Pages */
-        .page { display: none; animation: fadeIn 0.4s; }
+        /* Pages Setup */
+        .page { display: none; animation: fadeIn 0.4s; padding: 15px; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page-title { color: var(--gold); text-align: center; margin-bottom: 20px; font-size: 22px; }
+
+        /* Banners */
+        .banner { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('https://via.placeholder.com/600x300/111/e91e63?text=Boutique') center/cover; height: 180px; border-radius: 10px; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; margin-bottom: 20px; }
+        .banner h2 { color: var(--gold); font-size: 24px; margin-bottom: 10px; }
+        .banner p { color: #ddd; font-size: 14px; }
         
         /* Grids */
-        .categories-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 15px; }
-        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px; }
+        .categories-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .cat-item { text-align: center; cursor: pointer; }
+        .cat-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--gold); margin: 0 auto 5px; overflow: hidden; box-shadow: 0 0 10px rgba(212,175,55,0.3); }
+        .cat-img img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-item span { font-size: 12px; color: #eee; }
         
-        /* Cards */
-        .product-card { background: var(--bg-card); border: 1px solid #333; border-radius: 10px; overflow: hidden; }
-        .btn-buy { width: 100%; background: var(--pink); color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; margin-top: 5px; }
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .product-card { background: var(--bg-card); border: 1px solid #333; border-radius: 10px; overflow: hidden; position: relative; }
+        .product-card:hover { border-color: var(--gold); box-shadow: 0 0 15px rgba(212,175,55,0.2); }
+        .fav-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); border: none; color: #fff; padding: 5px 8px; border-radius: 50%; cursor: pointer; z-index: 2; }
+        .fav-btn.active { color: var(--pink); }
+        .product-img { height: 140px; width: 100%; object-fit: cover; }
+        .product-info { padding: 10px; }
+        .product-info h4 { font-size: 14px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .rating { font-size: 12px; color: var(--gold); margin-bottom: 5px; }
+        .price { font-size: 16px; color: var(--pink); font-weight: bold; }
+        .old-price { font-size: 12px; color: var(--text-muted); text-decoration: line-through; margin-right: 5px; }
+        .btn-add { width: 100%; background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px; border-radius: 5px; margin-top: 10px; cursor: pointer; transition: 0.3s; }
+        .btn-add:hover { background: var(--gold); color: #000; }
+        .btn-buy { width: 100%; background: var(--pink); border: none; color: white; padding: 8px; border-radius: 5px; margin-top: 5px; cursor: pointer; box-shadow: 0 0 10px var(--pink-glow); }
+
+        /* Cart & Checkout */
+        .cart-item { display: flex; gap: 10px; background: var(--bg-card); padding: 10px; border-radius: 10px; border: 1px solid #333; margin-bottom: 10px; align-items: center; }
+        .cart-item img { width: 70px; height: 70px; border-radius: 5px; object-fit: cover; }
+        .cart-item-info { flex-grow: 1; }
+        .qty-control { display: flex; align-items: center; gap: 10px; background: #000; border: 1px solid #444; width: fit-content; padding: 5px 10px; border-radius: 20px; margin-top: 5px; }
+        .qty-control button { background: none; border: none; color: var(--gold); font-size: 16px; cursor: pointer; }
+        .delete-btn { background: none; border: none; color: #ff5252; font-size: 18px; cursor: pointer; }
         
-        /* Modals */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 2000; }
-        .modal-content { background: var(--bg-card); padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; border: 1px solid var(--gold); }
+        .summary-box { background: var(--bg-card); border: 1px solid var(--gold); padding: 15px; border-radius: 10px; margin-top: 20px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: #ccc; }
+        .summary-total { font-size: 18px; color: var(--pink); font-weight: bold; border-top: 1px solid #333; padding-top: 10px; margin-top: 10px; }
+
+        /* Forms */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: var(--gold); font-size: 14px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: white; border-radius: 5px; outline: none; }
+        .form-group input:focus { border-color: var(--pink); }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: rgba(10,10,10,0.95); border-top: 1px solid #333; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 12px; cursor: pointer; transition: 0.3s; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--pink); }
+        .nav-item.active i { text-shadow: 0 0 10px var(--pink-glow); }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--bg-card); padding: 20px; border-radius: 10px; border: 1px solid var(--gold); width: 90%; max-width: 400px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <!-- المتجر -->
-    <div id="store-view">
-        <header class="main-header">
-            <div><i class="fa-solid fa-bars"></i></div>
-            <div class="header-center"><h1 id="store-name-display">بوتيك السعادة</h1></div>
-            <div class="header-left">
-                <!-- تم حذف زر الإدارة من هنا -->
+    <!-- Header -->
+    <header class="main-header">
+        <div><i class="fa-solid fa-bars header-icon" onclick="toggleMenu()"></i></div>
+        <div class="header-center"><h1>بوتيك السعادة</h1></div>
+        <div class="header-icons" style="display:flex; gap:15px;">
+            <i class="fa-solid fa-magnifying-glass header-icon"></i>
+            <div class="cart-icon" onclick="showPage('cart')">
+                <i class="fa-solid fa-cart-shopping header-icon"></i>
+                <span class="badge" id="cart-count">0</span>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <main id="home-page" class="page active">
-            <div style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://via.placeholder.com/600x300/111/333?text=Banner') center/cover; height: 200px; display: flex; align-items: center; padding: 20px; border-bottom: 2px solid var(--pink);">
-                <div>
-                    <h2 style="color: var(--gold);">لأن سعادتكم تستحق الأفضل</h2>
-                    <p style="color: #aaa; margin-top: 10px;">اكتشف عالم المتعة .. منتجات عالية الجودة</p>
-                </div>
+    <!-- 1. Home Page -->
+    <main id="page-home" class="page active">
+        <div class="banner">
+            <h2>لأن سعادتكم تستحق الأفضل</h2>
+            <p>اكتشف عالم المتعة .. منتجات عالية الجودة</p>
+        </div>
+        <h3 style="color:var(--gold); margin-bottom:10px;">الأقسام</h3>
+        <div class="categories-grid" id="home-categories"></div>
+        
+        <h3 style="color:var(--gold); margin: 20px 0 10px;">الأكثر مبيعاً 🔥</h3>
+        <div class="products-grid" id="home-products"></div>
+    </main>
+
+    <!-- 2. Categories Page -->
+    <main id="page-categories" class="page">
+        <h2 class="page-title">أقسام المتجر</h2>
+        <div class="banner" style="height: 120px;"><h2>اكتشف منتجاتنا</h2></div>
+        <div class="categories-grid" id="all-categories" style="gap:20px;"></div>
+    </main>
+
+    <!-- 3. Products Page -->
+    <main id="page-products" class="page">
+        <h2 class="page-title">جميع المنتجات</h2>
+        <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; margin-bottom:15px;">
+            <button class="btn-add" style="width:auto; padding:5px 15px; border-radius:20px;">الترتيب حسب</button>
+            <button class="btn-add" style="width:auto; padding:5px 15px; border-radius:20px;">الأعلى تقييماً</button>
+            <button class="btn-add" style="width:auto; padding:5px 15px; border-radius:20px;">الأكثر مبيعاً</button>
+        </div>
+        <div class="products-grid" id="all-products"></div>
+    </main>
+
+    <!-- 4. Cart Page -->
+    <main id="page-cart" class="page">
+        <h2 class="page-title">سلة المشتريات</h2>
+        <div id="cart-items-container"></div>
+        <div class="summary-box">
+            <div class="summary-row"><span>المجموع الفرعي</span> <span id="cart-subtotal">0 ر.س</span></div>
+            <div class="summary-row"><span>رسوم التوصيل</span> <span style="color:#00e676;">مجاني</span></div>
+            <div class="summary-row summary-total"><span>المجموع الكلي</span> <span id="cart-total">0 ر.س</span></div>
+            <button class="btn-buy" style="margin-top:20px;" onclick="showPage('checkout')">إتمام الطلب</button>
+        </div>
+    </main>
+
+    <!-- 5. Checkout Page -->
+    <main id="page-checkout" class="page">
+        <h2 class="page-title">إتمام الطلب</h2>
+        <div class="banner" style="height: 100px; border-color: var(--pink);"><h2>خطوة واحدة أقرب لطلبك</h2></div>
+        
+        <h3 style="color:var(--gold); margin-bottom:15px;">عنوان التوصيل</h3>
+        <div class="form-group"><label>الاسم بالكامل</label><input type="text" id="chk-name" placeholder="مثال: محمد أحمد"></div>
+        <div class="form-group"><label>رقم الهاتف</label><input type="text" id="chk-phone" placeholder="+967 770 123 456"></div>
+        <div class="form-group"><label>المدينة</label><input type="text" id="chk-city" placeholder="صنعاء"></div>
+        <div class="form-group"><label>العنوان بالتفصيل</label><input type="text" id="chk-address" placeholder="شارع المطار..."></div>
+
+        <h3 style="color:var(--gold); margin: 20px 0 15px;">طريقة الدفع</h3>
+        <div style="background:var(--bg-card); border:1px solid var(--pink); padding:15px; border-radius:10px; display:flex; align-items:center; gap:10px;">
+            <input type="radio" checked style="accent-color:var(--pink); width:20px; height:20px;">
+            <span>الدفع عند الاستلام</span>
+            <i class="fa-solid fa-money-bill-wave" style="color:var(--pink); margin-right:auto;"></i>
+        </div>
+
+        <button class="btn-buy" style="margin-top: 30px; padding: 15px; font-size: 18px;" onclick="submitOrder()">تأكيد الطلب <i class="fa-solid fa-lock"></i></button>
+    </main>
+
+    <!-- 6. Success Page -->
+    <main id="page-success" class="page">
+        <div style="text-align:center; padding: 40px 0;">
+            <i class="fa-solid fa-circle-check" style="font-size:70px; color:var(--gold); text-shadow:0 0 20px var(--gold); margin-bottom:20px;"></i>
+            <h2 style="color:var(--gold);">تم استلام طلبك بنجاح</h2>
+            <p style="color:#aaa; margin:10px 0 20px;">شكراً لك على التسوق من بوتيك السعادة. سيتم التواصل معك قريباً.</p>
+            <div style="background:var(--bg-card); border:1px solid #333; padding:15px; border-radius:10px; text-align:right; margin-bottom:20px;">
+                <p style="color:#ccc; margin-bottom:5px;">رقم الطلب: <strong style="color:var(--pink);" id="success-order-id">#4587</strong></p>
+                <p style="color:#ccc;">طريقة الدفع: <strong>عند الاستلام</strong></p>
             </div>
-            <div style="padding: 15px;"><h3 style="color: var(--gold);">الأقسام</h3></div>
-            <div id="categories-container" class="categories-grid"></div>
-            <div style="padding: 15px;"><h3 style="color: var(--gold);">المنتجات الأكثر مبيعاً 🔥</h3></div>
-            <div id="products-container" class="products-grid"></div>
-        </main>
+            <button class="btn-buy" onclick="showPage('home')">العودة للرئيسية</button>
+        </div>
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('home', this)"><i class="fa-solid fa-house"></i><span>الرئيسية</span></div>
+        <div class="nav-item" onclick="showPage('categories', this)"><i class="fa-solid fa-layer-group"></i><span>الأقسام</span></div>
+        <div class="nav-item" onclick="showPage('products', this)"><i class="fa-solid fa-bag-shopping"></i><span>المنتجات</span></div>
+        <div class="nav-item" onclick="showPage('cart', this)"><i class="fa-solid fa-heart"></i><span>المفضلة</span></div>
+        <div class="nav-item" onclick="showPage('account', this)"><i class="fa-solid fa-user"></i><span>حسابي</span></div>
+    </nav>
+
+    <!-- Simple Modal for Alerts -->
+    <div id="alert-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="color:var(--gold); margin-bottom:15px;">تنبيه</h3>
+            <p id="alert-text" style="color:#fff; margin-bottom:20px;">تمت الإضافة بنجاح</p>
+            <button class="btn-buy" onclick="document.getElementById('alert-modal').style.display='none'">حسناً</button>
+        </div>
     </div>
 
     <script>
-        // DB
+        // DB Setup
         const defaultData = {
-            settings: { storeName: "بوتيك السعادة", phone: "+966500000000", email: "support@happy.com" },
             categories: [
                 { id: "1", name: "قضبان صناعية", image: "https://via.placeholder.com/100/000/fff?text=Dildo" },
                 { id: "2", name: "السدادات", image: "https://via.placeholder.com/100/000/fff?text=Plug" },
                 { id: "3", name: "الطقات والتأخير", image: "https://via.placeholder.com/100/000/fff?text=Ring" },
-                { id: "4", name: "الزيوت والجل", image: "https://via.placeholder.com/100/000/fff?text=Oil" }
+                { id: "4", name: "الزيوت والجل", image: "https://via.placeholder.com/100/000/fff?text=Oil" },
+                { id: "5", name: "ألعاب متنوعة", image: "https://via.placeholder.com/100/000/fff?text=Toys" },
+                { id: "6", name: "ملابس مثيرة", image: "https://via.placeholder.com/100/000/fff?text=Lingerie" },
+                { id: "7", name: "الأكثر مبيعاً", image: "https://via.placeholder.com/100/000/fff?text=Best" },
+                { id: "8", name: "منتجات جديدة", image: "https://via.placeholder.com/100/000/fff?text=New" }
             ],
             products: [
-                { id: "p1", name: "قضيب سيليكون واقعي", price: 399, oldPrice: 599, categoryId: "1", image: "https://via.placeholder.com/150/111/fff?text=Product", rating: 4.8, sales: 124 },
-                { id: "p2", name: "مجموعة سدادات", price: 289, oldPrice: 0, categoryId: "2", image: "https://via.placeholder.com/150/111/fff?text=Product", rating: 4.9, sales: 89 }
-            ],
-            stats: { todaySales: 1450, todayOrders: 5, totalSales: 25400 }
+                { id: "p1", name: "قضيب سيليكون واقعي", price: 399, oldPrice: 599, categoryId: "1", image: "https://via.placeholder.com/150/111/fff?text=Product", rating: 4.8 },
+                { id: "p2", name: "مجموعة سدادات", price: 289, oldPrice: 0, categoryId: "2", image: "https://via.placeholder.com/150/111/fff?text=Product", rating: 4.9 },
+                { id: "p3", name: "حلقة تأخير", price: 249, oldPrice: 599, categoryId: "3", image: "https://via.placeholder.com/150/111/fff?text=Product", rating: 4.6 },
+                { id: "p4", name: "زيت مساج فاخر", price: 99, oldPrice: 149, categoryId: "4", image: "https://via.placeholder.com/150/111/fff?text=Product", rating: 4.5 }
+            ]
         };
 
-        function getStoreData() {
-            let data = localStorage.getItem('happyBoutiqueDB');
-            if (!data) { localStorage.setItem('happyBoutiqueDB', JSON.stringify(defaultData)); return defaultData; }
-            return JSON.parse(data);
+        let db = JSON.parse(localStorage.getItem('happyBoutique')) || defaultData;
+        let cart = JSON.parse(localStorage.getItem('happyCart')) || [];
+        let favs = JSON.parse(localStorage.getItem('happyFavs')) || [];
+
+        function saveDB() { localStorage.setItem('happyBoutique', JSON.stringify(db)); }
+        function saveCart() { localStorage.setItem('happyCart', JSON.stringify(cart)); updateCartCount(); }
+        function saveFavs() { localStorage.setItem('happyFavs', JSON.stringify(favs)); }
+
+        // Navigation
+        function showPage(pageId, element = null) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(`page-${pageId}`);
+            if(target) target.classList.add('active');
+            
+            if(element) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                element.classList.add('active');
+            }
+
+            if(pageId === 'cart') renderCart();
+            if(pageId === 'products') renderAllProducts();
         }
-        function generateId() { return Math.random().toString(36).substr(2, 9); }
 
-        let storeData = getStoreData();
+        function toggleMenu() {
+            // Simple toggle for now
+            alert('القائمة الجانبية ستظهر هنا');
+        }
 
-        // Store Logic
-        function renderStore() {
-            document.getElementById('store-name-display').innerText = storeData.settings.storeName;
-            const catContainer = document.getElementById('categories-container');
-            catContainer.innerHTML = storeData.categories.map(cat => `
-                <div style="text-align: center;">
-                    <div style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #d4af37; margin: 0 auto 5px; overflow: hidden;">
-                        <img src="${cat.image}" style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                    <span style="font-size: 12px;">${cat.name}</span>
+        function showAlert(msg) {
+            document.getElementById('alert-text').innerText = msg;
+            document.getElementById('alert-modal').style.display = 'flex';
+        }
+
+        // Render Functions
+        function renderHome() {
+            const catContainer = document.getElementById('home-categories');
+            catContainer.innerHTML = db.categories.slice(0,4).map(cat => `
+                <div class="cat-item" onclick="showPage('categories')">
+                    <div class="cat-img"><img src="${cat.image}"></div>
+                    <span>${cat.name}</span>
                 </div>
             `).join('');
 
-            const prodContainer = document.getElementById('products-container');
-            prodContainer.innerHTML = storeData.products.map(prod => `
+            const prodContainer = document.getElementById('home-products');
+            prodContainer.innerHTML = db.products.slice(0,4).map(prod => renderProductCard(prod)).join('');
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('all-categories');
+            container.innerHTML = db.categories.map(cat => `
+                <div class="cat-item" onclick="showPage('products')">
+                    <div class="cat-img" style="width:80px; height:80px;"><img src="${cat.image}"></div>
+                    <span style="font-size:14px; display:block; margin-top:10px;">${cat.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderAllProducts() {
+            const container = document.getElementById('all-products');
+            container.innerHTML = db.products.map(prod => renderProductCard(prod)).join('');
+        }
+
+        function renderProductCard(prod) {
+            const isFav = favs.includes(prod.id);
+            return `
                 <div class="product-card">
-                    <div style="height: 120px;"><img src="${prod.image}" style="width: 100%; height: 100%; object-fit: cover;"></div>
-                    <div style="padding: 10px;">
-                        <h4 style="font-size: 14px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${prod.name}</h4>
-                        <div style="font-size: 12px; color: #d4af37;"><i class="fa-solid fa-star"></i> ${prod.rating}</div>
-                        <div style="margin: 5px 0;"><span style="color: #e91e63; font-weight: bold;">${prod.price} ر.س</span></div>
-                        <button class="btn-buy">اطلب الآن</button>
+                    <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${prod.id}', this)">
+                        <i class="fa-solid fa-heart"></i>
+                    </button>
+                    <img src="${prod.image}" class="product-img">
+                    <div class="product-info">
+                        <h4>${prod.name}</h4>
+                        <div class="rating"><i class="fa-solid fa-star"></i> ${prod.rating}</div>
+                        <div>
+                            <span class="price">${prod.price} ر.س</span>
+                            ${prod.oldPrice ? `<span class="old-price">${prod.oldPrice} ر.س</span>` : ''}
+                        </div>
+                        <button class="btn-add" onclick="addToCart('${prod.id}')"><i class="fa-solid fa-cart-plus"></i> إضافة</button>
+                        <button class="btn-buy" onclick="buyNow('${prod.id}')">اطلب الآن</button>
                     </div>
                 </div>
-            `).join('');
+            `;
+        }
+
+        // Cart Logic
+        function addToCart(id) {
+            const item = cart.find(i => i.id === id);
+            if(item) item.qty += 1;
+            else cart.push({ id: id, qty: 1 });
+            saveCart();
+            showAlert('تمت الإضافة إلى السلة بنجاح');
+        }
+
+        function buyNow(id) {
+            const item = cart.find(i => i.id === id);
+            if(item) item.qty += 1;
+            else cart.push({ id: id, qty: 1 });
+            saveCart();
+            showPage('cart');
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.qty, 0);
+            document.getElementById('cart-count').innerText = count;
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items-container');
+            let subtotal = 0;
+
+            if(cart.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#aaa; margin-top:20px;">السلة فارغة</p>';
+            } else {
+                container.innerHTML = cart.map(item => {
+                    const prod = db.products.find(p => p.id === item.id);
+                    if(!prod) return '';
+                    subtotal += (prod.price * item.qty);
+                    return `
+                        <div class="cart-item">
+                            <img src="${prod.image}">
+                            <div class="cart-item-info">
+                                <h4 style="font-size:14px; margin-bottom:5px;">${prod.name}</h4>
+                                <div class="price">${prod.price} ر.س</div>
+                                <div class="qty-control">
+                                    <button onclick="updateQty('${prod.id}', -1)">-</button>
+                                    <span>${item.qty}</span>
+                                    <button onclick="updateQty('${prod.id}', 1)">+</button>
+                                </div>
+                            </div>
+                            <button class="delete-btn" onclick="removeFromCart('${prod.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            document.getElementById('cart-subtotal').innerText = `${subtotal} ر.س`;
+            document.getElementById('cart-total').innerText = `${subtotal} ر.س`;
+        }
+
+        function updateQty(id, change) {
+            const item = cart.find(i => i.id === id);
+            if(item) {
+                item.qty += change;
+                if(item.qty <= 0) removeFromCart(id);
+                else { saveCart(); renderCart(); }
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            saveCart();
+            renderCart();
+        }
+
+        // Favorites Logic
+        function toggleFav(id, btn) {
+            if(favs.includes(id)) {
+                favs = favs.filter(f => f !== id);
+                btn.classList.remove('active');
+            } else {
+                favs.push(id);
+                btn.classList.add('active');
+                showAlert('تمت الإضافة للمفضلة');
+            }
+            saveFavs();
+        }
+
+        // Checkout
+        function submitOrder() {
+            const name = document.getElementById('chk-name').value;
+            const phone = document.getElementById('chk-phone').value;
+            const city = document.getElementById('chk-city').value;
+            const address = document.getElementById('chk-address').value;
+
+            if(!name || !phone || !city || !address) {
+                showAlert('يرجى ملء جميع بيانات التوصيل');
+                return;
+            }
+            
+            // Here we would normally send data to backend
+            // For now, we simulate success
+            cart = [];
+            saveCart();
+            document.getElementById('success-order-id').innerText = `#${Math.floor(Math.random()*9000)+1000}`;
+            showPage('success');
         }
 
         // Init
-        renderStore();
+        renderHome();
+        renderCategories();
+        updateCartCount();
+
     </script>
 </body>
 </html>
