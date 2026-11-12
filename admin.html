@@ -11,35 +11,21 @@
     <style>
         /* تنسيقات إضافية لشاشة تسجيل الدخول */
         #login-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark); display: flex; justify-content: center; align-items: center; z-index: 9999;
         }
         .login-box {
-            background: var(--bg-card);
-            padding: 40px;
-            border-radius: 10px;
-            border: 1px solid var(--gold);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+            background: var(--bg-card); padding: 40px; border-radius: 10px; border: 1px solid var(--gold);
+            width: 90%; max-width: 400px; text-align: center; box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
         }
         .login-box h2 { color: var(--gold); margin-bottom: 20px; }
         .login-box input {
-            width: 100%; padding: 12px; margin-bottom: 15px;
-            background: #000; border: 1px solid #444; color: white;
-            border-radius: 5px; font-family: 'Tajawal';
+            width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #444;
+            color: white; border-radius: 5px; font-family: 'Tajawal';
         }
         .login-btn {
-            width: 100%; padding: 12px;
-            background: var(--pink); color: white; border: none;
-            border-radius: 5px; font-weight: bold; cursor: pointer;
-            font-family: 'Tajawal';
+            width: 100%; padding: 12px; background: var(--pink); color: white; border: none;
+            border-radius: 5px; font-weight: bold; cursor: pointer; font-family: 'Tajawal';
         }
     </style>
 </head>
@@ -70,6 +56,7 @@
                 <li onclick="switchTab('products', this)"><i class="fa-solid fa-box"></i> المنتجات</li>
                 <li onclick="switchTab('categories', this)"><i class="fa-solid fa-layer-group"></i> الأقسام</li>
                 <li onclick="switchTab('settings', this)"><i class="fa-solid fa-gear"></i> الإعدادات</li>
+                <li onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i> حساب المدير</li>
                 <li onclick="logout()" style="color: #ff5252; margin-top: 20px;"><i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج</li>
             </ul>
             <div class="sidebar-footer">
@@ -86,10 +73,10 @@
                 </div>
                 <div class="header-actions">
                     <div class="icon-btn"><i class="fa-regular fa-bell"></i></div>
-                    <!-- تمت إضافة onclick هنا لفتح صفحة المدير -->
+                    <!-- هنا الزر الذي يفتح صفحة المدير -->
                     <div class="admin-profile" onclick="switchTab('profile', this)" style="cursor:pointer;">
                         <img src="https://via.placeholder.com/40/000000/D4AF37?text=A" alt="Admin">
-                        <div><h4>مدير المتجر</h4><p>بوتيك السعادة</p></div>
+                        <div><h4>مدير المتجر</h4><p>إدارة الحساب</p></div>
                     </div>
                 </div>
             </header>
@@ -97,86 +84,44 @@
             <!-- قسم الرئيسية -->
             <section id="dashboard-section" class="page-section active">
                 <h2 class="section-title">لوحة التحكم</h2>
-                
-                <!-- البطاقات الإحصائية -->
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon pink"><i class="fa-solid fa-box"></i></div>
-                        <div class="stat-info">
-                            <h3 id="stat-products">0</h3>
-                            <p>إجمالي المنتجات</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon gold"><i class="fa-solid fa-sack-dollar"></i></div>
-                        <div class="stat-info">
-                            <h3 id="stat-sales">0 <span>ريال</span></h3>
-                            <p>إجمالي المبيعات</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon pink"><i class="fa-solid fa-cart-shopping"></i></div>
-                        <div class="stat-info">
-                            <h3 id="stat-orders">0</h3>
-                            <p>إجمالي الطلبات</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon gold"><i class="fa-solid fa-users"></i></div>
-                        <div class="stat-info">
-                            <h3 id="stat-customers">0</h3>
-                            <p>إجمالي العملاء</p>
-                        </div>
-                    </div>
+                    <div class="stat-card"><div class="stat-icon pink"><i class="fa-solid fa-box"></i></div><div class="stat-info"><h3 id="stat-products">0</h3><p>إجمالي المنتجات</p></div></div>
+                    <div class="stat-card"><div class="stat-icon gold"><i class="fa-solid fa-sack-dollar"></i></div><div class="stat-info"><h3 id="stat-sales">0 <span>ريال</span></h3><p>إجمالي المبيعات</p></div></div>
+                    <div class="stat-card"><div class="stat-icon pink"><i class="fa-solid fa-cart-shopping"></i></div><div class="stat-info"><h3 id="stat-orders">0</h3><p>إجمالي الطلبات</p></div></div>
+                    <div class="stat-card"><div class="stat-icon gold"><i class="fa-solid fa-users"></i></div><div class="stat-info"><h3 id="stat-customers">0</h3><p>إجمالي العملاء</p></div></div>
                 </div>
-
-                <!-- الرسوم البيانية -->
                 <div class="charts-grid">
                     <div class="chart-box"><h3>المبيعات خلال آخر 7 أيام</h3><canvas id="salesChart"></canvas></div>
                     <div class="chart-box"><h3>توزيع الطلبات</h3><canvas id="ordersChart"></canvas></div>
                 </div>
-
-                <!-- الجداول والمنتجات -->
                 <div class="bottom-grid">
                     <div class="table-box">
                         <div class="box-header"><h3>أحدث الطلبات</h3></div>
                         <table class="data-table">
                             <thead><tr><th># الطلب</th><th>العميل</th><th>المبلغ</th><th>الحالة</th></tr></thead>
-                            <tbody id="recent-orders-body">
-                                <tr><td colspan="4" style="text-align:center;">لا توجد طلبات حتى الآن</td></tr>
-                            </tbody>
+                            <tbody id="recent-orders-body"><tr><td colspan="4" style="text-align:center;">لا توجد طلبات حتى الآن</td></tr></tbody>
                         </table>
                     </div>
                     <div class="list-box">
                         <div class="box-header"><h3>المنتجات الأكثر مبيعاً</h3></div>
-                        <ul class="best-sellers" id="best-sellers-list">
-                            <li style="justify-content:center; border:none;">لا توجد مبيعات حتى الآن</li>
-                        </ul>
+                        <ul class="best-sellers" id="best-sellers-list"><li style="justify-content:center; border:none;">لا توجد مبيعات حتى الآن</li></ul>
                     </div>
                 </div>
             </section>
 
             <!-- قسم المنتجات -->
             <section id="products-section" class="page-section">
-                <div class="box-header">
-                    <h2 class="section-title">إدارة المنتجات</h2>
-                    <button class="btn-primary" onclick="openProductModal()">إضافة منتج +</button>
-                </div>
+                <div class="box-header"><h2 class="section-title">إدارة المنتجات</h2><button class="btn-primary" onclick="openProductModal()">إضافة منتج +</button></div>
                 <table class="data-table" id="products-table">
-                    <thead><tr><th>الصورة</th><th>الاسم</th><th>السعر</th><th>إجراءات</th></tr></thead>
-                    <tbody></tbody>
+                    <thead><tr><th>الصورة</th><th>الاسم</th><th>السعر</th><th>إجراءات</th></tr></thead><tbody></tbody>
                 </table>
             </section>
 
             <!-- قسم الأقسام -->
             <section id="categories-section" class="page-section">
-                <div class="box-header">
-                    <h2 class="section-title">إدارة الأقسام</h2>
-                    <button class="btn-primary" onclick="openCategoryModal()">إضافة قسم +</button>
-                </div>
+                <div class="box-header"><h2 class="section-title">إدارة الأقسام</h2><button class="btn-primary" onclick="openCategoryModal()">إضافة قسم +</button></div>
                 <table class="data-table" id="categories-table">
-                    <thead><tr><th>الصورة</th><th>الاسم</th><th>إجراءات</th></tr></thead>
-                    <tbody></tbody>
+                    <thead><tr><th>الصورة</th><th>الاسم</th><th>إجراءات</th></tr></thead><tbody></tbody>
                 </table>
             </section>
 
@@ -191,18 +136,12 @@
                 </form>
             </section>
 
-            <!-- قسم حساب المدير (تمت إضافته هنا) -->
+            <!-- قسم حساب المدير -->
             <section id="profile-section" class="page-section">
                 <h2 class="section-title">إدارة حساب المدير</h2>
                 <form id="profile-form" class="settings-form">
-                    <div class="form-group">
-                        <label>اسم المستخدم الجديد</label>
-                        <input type="text" id="prof-username" required>
-                    </div>
-                    <div class="form-group">
-                        <label>كلمة المرور الجديدة</label>
-                        <input type="password" id="prof-password" required>
-                    </div>
+                    <div class="form-group"><label>اسم المستخدم الجديد</label><input type="text" id="prof-username" required></div>
+                    <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="prof-password" required></div>
                     <button type="submit" class="btn-primary">حفظ بيانات الدخول</button>
                 </form>
             </section>
@@ -219,10 +158,7 @@
             <input type="number" id="prod-price" placeholder="السعر" required>
             <select id="prod-category"></select>
             <input type="text" id="prod-image" placeholder="رابط الصورة" required>
-            <div class="modal-actions">
-                <button class="btn-primary" onclick="saveProduct()">حفظ</button>
-                <button class="btn-secondary" onclick="closeModal('product-modal')">إلغاء</button>
-            </div>
+            <div class="modal-actions"><button class="btn-primary" onclick="saveProduct()">حفظ</button><button class="btn-secondary" onclick="closeModal('product-modal')">إلغاء</button></div>
         </div>
     </div>
 
@@ -232,10 +168,7 @@
             <input type="hidden" id="cat-id">
             <input type="text" id="cat-name" placeholder="اسم القسم" required>
             <input type="text" id="cat-image" placeholder="رابط الصورة" required>
-            <div class="modal-actions">
-                <button class="btn-primary" onclick="saveCategory()">حفظ</button>
-                <button class="btn-secondary" onclick="closeModal('category-modal')">إلغاء</button>
-            </div>
+            <div class="modal-actions"><button class="btn-primary" onclick="saveCategory()">حفظ</button><button class="btn-secondary" onclick="closeModal('category-modal')">إلغاء</button></div>
         </div>
     </div>
 
