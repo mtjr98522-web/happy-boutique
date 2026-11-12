@@ -4,197 +4,203 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم | بوتيك السعادة</title>
-    <!-- خط Tajawal -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <!-- أيقونات FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- ملف تنسيقات لوحة التحكم -->
     <link rel="stylesheet" href="css/admin.css">
-    <!-- مكتبة Chart.js للرسوم البيانية -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* تنسيقات إضافية لشاشة تسجيل الدخول */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .login-box {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--gold);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+        .login-box h2 { color: var(--gold); margin-bottom: 20px; }
+        .login-box input {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            background: #000; border: 1px solid #444; color: white;
+            border-radius: 5px; font-family: 'Tajawal';
+        }
+        .login-btn {
+            width: 100%; padding: 12px;
+            background: var(--pink); color: white; border: none;
+            border-radius: 5px; font-weight: bold; cursor: pointer;
+            font-family: 'Tajawal';
+        }
+    </style>
 </head>
 <body>
 
-    <!-- القائمة الجانبية -->
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <img src="https://via.placeholder.com/50/000000/D4AF37?text=B" alt="Logo">
-            <h2>بوتيك السعادة</h2>
+    <!-- شاشة تسجيل الدخول (مخفية افتراضياً إذا تم تسجيل الدخول) -->
+    <div id="login-screen">
+        <div class="login-box">
+            <img src="https://via.placeholder.com/60/000000/D4AF37?text=Logo" style="border-radius:50%; margin-bottom:15px;">
+            <h2>تسجيل الدخول للإدارة</h2>
+            <input type="text" id="login-user" placeholder="اسم المستخدم">
+            <input type="password" id="login-pass" placeholder="كلمة المرور">
+            <button class="login-btn" onclick="checkLogin()">دخول</button>
+            <p id="login-error" style="color:red; font-size:12px; margin-top:10px; display:none;">بيانات الدخول غير صحيحة</p>
         </div>
-        <ul class="nav-links">
-            <li class="active" onclick="switchTab('dashboard')"><i class="fa-solid fa-house"></i> الرئيسية</li>
-            <li onclick="switchTab('products')"><i class="fa-solid fa-box"></i> المنتجات</li>
-            <li onclick="switchTab('categories')"><i class="fa-solid fa-layer-group"></i> الأقسام</li>
-            <li onclick="switchTab('orders')"><i class="fa-solid fa-cart-shopping"></i> الطلبات <span class="badge">12</span></li>
-            <li onclick="switchTab('customers')"><i class="fa-solid fa-users"></i> العملاء</li>
-            <li onclick="switchTab('inventory')"><i class="fa-solid fa-warehouse"></i> المخزون</li>
-            <li onclick="switchTab('reports')"><i class="fa-solid fa-chart-pie"></i> التقارير</li>
-            <li onclick="switchTab('offers')"><i class="fa-solid fa-tags"></i> العروض والخصومات</li>
-            <li onclick="switchTab('settings')"><i class="fa-solid fa-gear"></i> الإعدادات</li>
-        </ul>
-        <div class="sidebar-footer">
-            <a href="index.html"><i class="fa-solid fa-store"></i> العودة للمتجر</a>
-        </div>
-    </aside>
+    </div>
 
-    <!-- المحتوى الرئيسي -->
-    <main class="main-content">
-        
-        <!-- الشريط العلوي -->
-        <header class="top-header">
-            <div class="search-bar">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="ابحث عن منتج أو طلب أو عميل...">
+    <!-- محتوى لوحة التحكم (مخفي حتى يتم تسجيل الدخول) -->
+    <div id="admin-app" style="display: none;">
+        <!-- القائمة الجانبية -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="https://via.placeholder.com/50/000000/D4AF37?text=B" alt="Logo">
+                <h2>بوتيك السعادة</h2>
             </div>
-            <div class="header-actions">
-                <div class="icon-btn"><i class="fa-regular fa-bell"></i><span class="dot"></span></div>
-                <div class="icon-btn"><i class="fa-solid fa-gear"></i></div>
-                <div class="admin-profile">
-                    <img src="https://via.placeholder.com/40/000000/D4AF37?text=A" alt="Admin">
-                    <div>
-                        <h4>مدير المتجر</h4>
-                        <p>بوتيك السعادة</p>
-                    </div>
-                    <i class="fa-solid fa-chevron-down"></i>
+            <ul class="nav-links">
+                <li class="active" onclick="switchTab('dashboard')"><i class="fa-solid fa-house"></i> الرئيسية</li>
+                <li onclick="switchTab('products')"><i class="fa-solid fa-box"></i> المنتجات</li>
+                <li onclick="switchTab('categories')"><i class="fa-solid fa-layer-group"></i> الأقسام</li>
+                <li onclick="switchTab('settings')"><i class="fa-solid fa-gear"></i> الإعدادات</li>
+                <li onclick="logout()" style="color: #ff5252; margin-top: 20px;"><i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج</li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="index.html"><i class="fa-solid fa-store"></i> العودة للمتجر</a>
+            </div>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="ابحث عن منتج...">
                 </div>
-            </div>
-        </header>
-
-        <!-- قسم الرئيسية (Dashboard) -->
-        <section id="dashboard-section" class="page-section active">
-            <h2 class="section-title">لوحة التحكم</h2>
-            
-            <!-- البطاقات الإحصائية -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon pink"><i class="fa-solid fa-box"></i></div>
-                    <div class="stat-info">
-                        <h3 id="stat-products">128</h3>
-                        <p>إجمالي المنتجات</p>
-                        <span class="trend up"><i class="fa-solid fa-arrow-up"></i> 5%</span>
+                <div class="header-actions">
+                    <div class="icon-btn"><i class="fa-regular fa-bell"></i></div>
+                    <div class="admin-profile">
+                        <img src="https://via.placeholder.com/40/000000/D4AF37?text=A" alt="Admin">
+                        <div><h4>مدير المتجر</h4><p>بوتيك السعادة</p></div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon gold"><i class="fa-solid fa-sack-dollar"></i></div>
-                    <div class="stat-info">
-                        <h3 id="stat-sales">24,680 <span>ريال</span></h3>
-                        <p>إجمالي المبيعات</p>
-                        <span class="trend up"><i class="fa-solid fa-arrow-up"></i> 25%</span>
+            </header>
+
+            <!-- قسم الرئيسية -->
+            <section id="dashboard-section" class="page-section active">
+                <h2 class="section-title">لوحة التحكم</h2>
+                
+                <!-- البطاقات الإحصائية (تم تصفيرها) -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon pink"><i class="fa-solid fa-box"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-products">0</h3>
+                            <p>إجمالي المنتجات</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon gold"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-sales">0 <span>ريال</span></h3>
+                            <p>إجمالي المبيعات</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pink"><i class="fa-solid fa-cart-shopping"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-orders">0</h3>
+                            <p>إجمالي الطلبات</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon gold"><i class="fa-solid fa-users"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-customers">0</h3>
+                            <p>إجمالي العملاء</p>
+                        </div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon pink"><i class="fa-solid fa-cart-shopping"></i></div>
-                    <div class="stat-info">
-                        <h3 id="stat-orders">856</h3>
-                        <p>إجمالي الطلبات</p>
-                        <span class="trend up"><i class="fa-solid fa-arrow-up"></i> 18%</span>
+
+                <!-- الرسوم البيانية -->
+                <div class="charts-grid">
+                    <div class="chart-box"><h3>المبيعات خلال آخر 7 أيام</h3><canvas id="salesChart"></canvas></div>
+                    <div class="chart-box"><h3>توزيع الطلبات</h3><canvas id="ordersChart"></canvas></div>
+                </div>
+
+                <!-- الجداول والمنتجات -->
+                <div class="bottom-grid">
+                    <div class="table-box">
+                        <div class="box-header"><h3>أحدث الطلبات</h3></div>
+                        <table class="data-table">
+                            <thead><tr><th># الطلب</th><th>العميل</th><th>المبلغ</th><th>الحالة</th></tr></thead>
+                            <tbody id="recent-orders-body">
+                                <tr><td colspan="4" style="text-align:center;">لا توجد طلبات حتى الآن</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="list-box">
+                        <div class="box-header"><h3>المنتجات الأكثر مبيعاً</h3></div>
+                        <ul class="best-sellers" id="best-sellers-list">
+                            <li style="justify-content:center; border:none;">لا توجد مبيعات حتى الآن</li>
+                        </ul>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon gold"><i class="fa-solid fa-users"></i></div>
-                    <div class="stat-info">
-                        <h3 id="stat-customers">1,248</h3>
-                        <p>إجمالي العملاء</p>
-                        <span class="trend up"><i class="fa-solid fa-arrow-up"></i> 12%</span>
-                    </div>
+            </section>
+
+            <!-- قسم المنتجات -->
+            <section id="products-section" class="page-section">
+                <div class="box-header">
+                    <h2 class="section-title">إدارة المنتجات</h2>
+                    <button class="btn-primary" onclick="openProductModal()">إضافة منتج +</button>
                 </div>
-            </div>
+                <table class="data-table" id="products-table">
+                    <thead><tr><th>الصورة</th><th>الاسم</th><th>السعر</th><th>إجراءات</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </section>
 
-            <!-- الرسوم البيانية -->
-            <div class="charts-grid">
-                <div class="chart-box">
-                    <h3>المبيعات خلال آخر 7 أيام</h3>
-                    <canvas id="salesChart"></canvas>
+            <!-- قسم الأقسام -->
+            <section id="categories-section" class="page-section">
+                <div class="box-header">
+                    <h2 class="section-title">إدارة الأقسام</h2>
+                    <button class="btn-primary" onclick="openCategoryModal()">إضافة قسم +</button>
                 </div>
-                <div class="chart-box">
-                    <h3>توزيع الطلبات</h3>
-                    <canvas id="ordersChart"></canvas>
-                </div>
-            </div>
+                <table class="data-table" id="categories-table">
+                    <thead><tr><th>الصورة</th><th>الاسم</th><th>إجراءات</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </section>
 
-            <!-- الجداول والمنتجات -->
-            <div class="bottom-grid">
-                <!-- أحدث الطلبات -->
-                <div class="table-box">
-                    <div class="box-header">
-                        <h3>أحدث الطلبات</h3>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th># الطلب</th>
-                                <th>اسم العميل</th>
-                                <th>المبلغ</th>
-                                <th>الحالة</th>
-                                <th>التاريخ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recent-orders-body">
-                            <!-- سيتم تعبئتها بالجافاسكريبت -->
-                        </tbody>
-                    </table>
-                </div>
+            <!-- قسم الإعدادات -->
+            <section id="settings-section" class="page-section">
+                <h2 class="section-title">إعدادات المتجر</h2>
+                <form id="settings-form" class="settings-form">
+                    <div class="form-group"><label>اسم المتجر</label><input type="text" id="set-name" required></div>
+                    <div class="form-group"><label>رقم الهاتف</label><input type="text" id="set-phone" required></div>
+                    <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="set-email" required></div>
+                    <button type="submit" class="btn-primary">حفظ التعديلات</button>
+                </form>
+            </section>
+        </main>
+    </div>
 
-                <!-- المنتجات الأكثر مبيعاً -->
-                <div class="list-box">
-                    <div class="box-header">
-                        <h3>المنتجات الأكثر مبيعاً</h3>
-                    </div>
-                    <ul class="best-sellers" id="best-sellers-list">
-                        <!-- سيتم تعبئتها بالجافاسكريبت -->
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- باقي الأقسام (المنتجات، الأقسام، الإعدادات...) -->
-        <!-- قسم المنتجات -->
-        <section id="products-section" class="page-section">
-            <div class="box-header">
-                <h2 class="section-title">إدارة المنتجات</h2>
-                <button class="btn-primary" onclick="openProductModal()">إضافة منتج +</button>
-            </div>
-            <table class="data-table" id="products-table">
-                <thead><tr><th>الصورة</th><th>الاسم</th><th>السعر</th><th>القسم</th><th>إجراءات</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </section>
-
-        <!-- قسم الأقسام -->
-        <section id="categories-section" class="page-section">
-            <div class="box-header">
-                <h2 class="section-title">إدارة الأقسام</h2>
-                <button class="btn-primary" onclick="openCategoryModal()">إضافة قسم +</button>
-            </div>
-            <table class="data-table" id="categories-table">
-                <thead><tr><th>الصورة</th><th>الاسم</th><th>إجراءات</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </section>
-
-        <!-- قسم الإعدادات -->
-        <section id="settings-section" class="page-section">
-            <h2 class="section-title">إعدادات المتجر</h2>
-            <form id="settings-form" class="settings-form">
-                <div class="form-group"><label>اسم المتجر</label><input type="text" id="set-name" required></div>
-                <div class="form-group"><label>رقم الهاتف</label><input type="text" id="set-phone" required></div>
-                <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="set-email" required></div>
-                <button type="submit" class="btn-primary">حفظ التعديلات</button>
-            </form>
-        </section>
-
-    </main>
-
-    <!-- النوافذ المنبثقة (Modals) -->
+    <!-- النوافذ المنبثقة -->
     <div id="product-modal" class="modal">
         <div class="modal-content">
-            <h3 id="prod-modal-title">إضافة منتج</h3>
+            <h3>إضافة/تعديل منتج</h3>
             <input type="hidden" id="prod-id">
             <input type="text" id="prod-name" placeholder="اسم المنتج" required>
             <input type="number" id="prod-price" placeholder="السعر" required>
             <select id="prod-category"></select>
             <input type="text" id="prod-image" placeholder="رابط الصورة" required>
-            <textarea id="prod-desc" placeholder="وصف المنتج"></textarea>
             <div class="modal-actions">
                 <button class="btn-primary" onclick="saveProduct()">حفظ</button>
                 <button class="btn-secondary" onclick="closeModal('product-modal')">إلغاء</button>
@@ -215,7 +221,6 @@
         </div>
     </div>
 
-    <!-- ملفات الجافاسكريبت -->
     <script src="js/db.js"></script>
     <script src="js/admin.js"></script>
 </body>
