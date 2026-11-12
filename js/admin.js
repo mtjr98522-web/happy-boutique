@@ -1,13 +1,22 @@
 // js/admin.js
 
+// دالة جلب بيانات المدير (مع إنشاء حساب افتراضي إذا لم يكن موجوداً)
+function getAdminCredentials() {
+    let data = getStoreData();
+    if (!data.adminCredentials) {
+        data.adminCredentials = { username: "admin", password: "123456" };
+        saveStoreData(data);
+    }
+    return data.adminCredentials;
+}
+
 // 1. نظام الحماية (تسجيل الدخول)
-// اسم المستخدم: admin
-// كلمة المرور: 123456
-function checkLogin() {
+window.checkLogin = function() {
     const user = document.getElementById('login-user').value;
     const pass = document.getElementById('login-pass').value;
+    const creds = getAdminCredentials();
 
-    if (user === 'admin' && pass === '123456') {
+    if (user === creds.username && pass === creds.password) {
         // نجاح الدخول
         sessionStorage.setItem('isAdminLoggedIn', 'true');
         document.getElementById('login-screen').style.display = 'none';
@@ -19,9 +28,9 @@ function checkLogin() {
     }
 }
 
-function logout() {
+window.logout = function() {
     sessionStorage.removeItem('isAdminLoggedIn');
-    location.reload(); // إعادة تحميل الصفحة لإظهار شاشة الدخول
+    location.reload(); 
 }
 
 // التحقق عند تحميل الصفحة
@@ -37,7 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
 function initDashboard() {
     let storeData = getStoreData();
     
-    // تصفير الإحصائيات (لأنه لا توجد طلبات حقيقية بعد)
     document.getElementById('stat-products').innerText = storeData.products.length;
     document.getElementById('stat-sales').innerHTML = "0 <span>ريال</span>";
     document.getElementById('stat-orders').innerText = "0";
@@ -49,48 +57,25 @@ function initDashboard() {
         type: 'bar',
         data: {
             labels: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
-            datasets: [{
-                label: 'المبيعات',
-                data: [0, 0, 0, 0, 0, 0, 0], // تم تصفير البيانات
-                backgroundColor: '#333', // لون رمادي لأنها صفر
-                borderRadius: 5
-            }]
+            datasets: [{ label: 'المبيعات', data: [0, 0, 0, 0, 0, 0, 0], backgroundColor: '#333', borderRadius: 5 }]
         },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { grid: { color: '#333' }, ticks: { color: '#aaa' }, beginAtZero: true },
-                x: { grid: { display: false }, ticks: { color: '#aaa' } }
-            }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#333' }, ticks: { color: '#aaa' }, beginAtZero: true }, x: { grid: { display: false }, ticks: { color: '#aaa' } } } }
     });
 
-    // المخطط الدائري (بدون طلبات)
+    // المخطط الدائري
     const ctxOrders = document.getElementById('ordersChart').getContext('2d');
     new Chart(ctxOrders, {
         type: 'doughnut',
-        data: {
-            labels: ['لا توجد طلبات'],
-            datasets: [{
-                data: [1], // قيمة وهمية لعرض الدائرة الرمادية
-                backgroundColor: ['#333'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false, cutout: '75%',
-            plugins: { legend: { display: false } }
-        }
+        data: { labels: ['لا توجد طلبات'], datasets: [{ data: [1], backgroundColor: ['#333'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
     });
 
-    // تحديث الجداول
     renderAdminTables(storeData);
+    loadProfileData(); // تحميل بيانات المدير في الحقول
 }
 
 // دالة مساعدة لتحديث الجداول
 function renderAdminTables(storeData) {
-    // جدول المنتجات
     const prodTable = document.querySelector('#products-table tbody');
     if(prodTable) {
         prodTable.innerHTML = storeData.products.map(prod => `
@@ -106,7 +91,6 @@ function renderAdminTables(storeData) {
         `).join('');
     }
 
-    // جدول الأقسام
     const catTable = document.querySelector('#categories-table tbody');
     if(catTable) {
         catTable.innerHTML = storeData.categories.map(cat => `
@@ -121,13 +105,9 @@ function renderAdminTables(storeData) {
         `).join('');
     }
 
-    // تعبئة القائمة المنسدلة في نافذة إضافة المنتج
     const select = document.getElementById('prod-category');
-    if(select) {
-        select.innerHTML = storeData.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-    }
+    if(select) select.innerHTML = storeData.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
 
-    // تعبئة الإعدادات
     if(document.getElementById('set-name')) {
         document.getElementById('set-name').value = storeData.settings.storeName;
         document.getElementById('set-phone').value = storeData.settings.phone;
@@ -141,10 +121,15 @@ window.switchTab = function(tabId) {
     document.querySelectorAll('.nav-links li').forEach(l => l.classList.remove('active'));
     
     document.getElementById(`${tabId}-section`).classList.add('active');
-    event.currentTarget.classList.add('active');
+    if(event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+    }
+    
+    // إذا فتحنا قسم حساب المدير، نقوم بتحديث الحقول
+    if(tabId === 'profile') loadProfileData();
 };
 
-// 4. دوال المنتجات والأقسام (تعتمد على db.js)
+// 4. دوال المنتجات والأقسام
 window.openProductModal = function() { document.getElementById('product-modal').style.display = 'flex'; };
 window.openCategoryModal = function() { document.getElementById('category-modal').style.display = 'flex'; };
 window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; };
@@ -188,7 +173,7 @@ window.saveCategory = function() {
     closeModal('category-modal');
 };
 
-// حفظ الإعدادات
+// 5. حفظ الإعدادات
 document.getElementById('settings-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
     let storeData = getStoreData();
@@ -197,4 +182,26 @@ document.getElementById('settings-form')?.addEventListener('submit', (e) => {
     storeData.settings.email = document.getElementById('set-email').value;
     saveStoreData(storeData);
     alert('تم حفظ الإعدادات بنجاح!');
+});
+
+// 6. إدارة حساب المدير (جديد)
+function loadProfileData() {
+    const creds = getAdminCredentials();
+    const userField = document.getElementById('prof-username');
+    const passField = document.getElementById('prof-password');
+    if(userField) userField.value = creds.username;
+    if(passField) passField.value = creds.password;
+}
+
+document.getElementById('profile-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let storeData = getStoreData();
+    const newUser = document.getElementById('prof-username').value;
+    const newPass = document.getElementById('prof-password').value;
+
+    if(!newUser || !newPass) return alert('يرجى ملء جميع الحقول');
+
+    storeData.adminCredentials = { username: newUser, password: newPass };
+    saveStoreData(storeData);
+    alert('تم تحديث بيانات الدخول بنجاح! يرجى استخدامها في المرة القادمة.');
 });
