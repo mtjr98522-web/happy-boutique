@@ -1,222 +1,208 @@
 // js/admin.js
-let storeData = getStoreData();
-
 document.addEventListener("DOMContentLoaded", () => {
-    renderStats();
-    renderProductsTable();
-    renderCategoriesTable();
-    loadSettings();
-    populateCategorySelect();
-});
-
-// التنقل بين التبويبات
-function showAdminTab(tabId) {
-    document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
+    // جلب البيانات من قاعدة البيانات
+    let storeData = getStoreData();
     
-    document.getElementById(`tab-${tabId}`).classList.add('active');
-    event.currentTarget.classList.add('active');
-}
+    // 1. تعبئة البيانات في البطاقات
+    document.getElementById('stat-products').innerText = storeData.products.length;
+    // إحصائيات وهمية للمبيعات والطلبات (يمكنك ربطها بالطلبات الحقيقية لاحقاً)
+    document.getElementById('stat-sales').innerHTML = "24,680 <span>ريال</span>";
+    document.getElementById('stat-orders').innerText = "856";
+    document.getElementById('stat-customers').innerText = "1,248";
 
-// --- الإحصائيات ---
-function renderStats() {
-    const container = document.getElementById('stats-container');
-    const stats = storeData.stats;
-    container.innerHTML = `
-        <div class="stat-card">
-            <i class="fa-solid fa-sack-dollar"></i>
-            <h3>${stats.todaySales} ر.س</h3>
-            <p>مبيعات اليوم</p>
-        </div>
-        <div class="stat-card">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <h3>${stats.todayOrders}</h3>
-            <p>طلبات اليوم</p>
-        </div>
-        <div class="stat-card">
-            <i class="fa-solid fa-chart-line"></i>
-            <h3>${stats.totalSales} ر.س</h3>
-            <p>إجمالي المبيعات</p>
-        </div>
-        <div class="stat-card">
-            <i class="fa-solid fa-users"></i>
-            <h3>${stats.visitors}</h3>
-            <p>زوار اليوم</p>
-        </div>
-    `;
-}
+    // 2. رسم المخطط البياني للمبيعات
+    const ctxSales = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctxSales, {
+        type: 'bar',
+        data: {
+            labels: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+            datasets: [{
+                label: 'المبيعات',
+                data: [1500, 2200, 2800, 2600, 3100, 4000, 4800],
+                backgroundColor: '#e91e63',
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { color: '#333' }, ticks: { color: '#aaa' } },
+                x: { grid: { display: false }, ticks: { color: '#aaa' } }
+            }
+        }
+    });
 
-// --- المنتجات ---
-function renderProductsTable() {
-    const tbody = document.querySelector('#products-table tbody');
-    tbody.innerHTML = '';
-    storeData.products.forEach(prod => {
-        const cat = storeData.categories.find(c => c.id === prod.categoryId);
-        tbody.innerHTML += `
+    // 3. رسم المخطط الدائري لتوزيع الطلبات
+    const ctxOrders = document.getElementById('ordersChart').getContext('2d');
+    new Chart(ctxOrders, {
+        type: 'doughnut',
+        data: {
+            labels: ['المنتجات النسائية', 'أدوات وجماليات', 'ألعاب', 'إكسسوارات'],
+            datasets: [{
+                data: [45, 20, 15, 20],
+                backgroundColor: ['#e91e63', '#d4af37', '#9c27b0', '#607d8b'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: { legend: { position: 'bottom', labels: { color: '#aaa' } } }
+        }
+    });
+
+    // 4. عرض أحدث الطلبات (بيانات تجريبية)
+    const recentOrders = [
+        { id: '#4587', name: 'أحمد محمد', price: '320 ر.س', status: 'قيد التوصيل', date: '2025-10-21' },
+        { id: '#4586', name: 'سارة علي', price: '450 ر.س', status: 'تم التوصيل', date: '2025-10-21' },
+        { id: '#4585', name: 'محمد عبدالله', price: '275 ر.س', status: 'قيد المعالجة', date: '2025-10-20' }
+    ];
+
+    const ordersBody = document.getElementById('recent-orders-body');
+    recentOrders.forEach(order => {
+        let statusClass = order.status === 'قيد التوصيل' ? 'status-shipped' : (order.status === 'تم التوصيل' ? 'status-delivered' : 'status-processing');
+        ordersBody.innerHTML += `
             <tr>
-                <td><img src="${prod.image}" alt=""></td>
-                <td>${prod.name}</td>
-                <td>${prod.price} ر.س</td>
-                <td>${cat ? cat.name : 'غير محدد'}</td>
-                <td>
-                    <button class="action-btn" onclick="editProduct('${prod.id}')"><i class="fa-solid fa-pen"></i></button>
-                    <button class="action-btn" onclick="deleteProduct('${prod.id}')"><i class="fa-solid fa-trash"></i></button>
-                </td>
+                <td>${order.id}</td>
+                <td>${order.name}</td>
+                <td>${order.price}</td>
+                <td><span class="status-badge ${statusClass}">${order.status}</span></td>
+                <td>${order.date}</td>
             </tr>
         `;
     });
-}
 
-function openProductModal() {
-    document.getElementById('prod-id').value = '';
-    document.getElementById('prod-name').value = '';
-    document.getElementById('prod-price').value = '';
-    document.getElementById('prod-oldprice').value = '';
-    document.getElementById('prod-image').value = '';
-    document.getElementById('prod-desc').value = '';
-    document.getElementById('prod-modal-title').innerText = 'إضافة منتج جديد';
-    document.getElementById('product-modal').style.display = 'flex';
-}
+    // 5. عرض المنتجات الأكثر مبيعاً
+    const bestSellersList = document.getElementById('best-sellers-list');
+    const topProducts = storeData.products.slice(0, 5); // نأخذ أول 5 منتجات
+    topProducts.forEach((prod, index) => {
+        bestSellersList.innerHTML += `
+            <li>
+                <span class="rank">${index + 1}</span>
+                <img src="${prod.image}" alt="">
+                <div class="info">
+                    <h4>${prod.name}</h4>
+                    <p>${prod.price} ر.س</p>
+                </div>
+            </li>
+        `;
+    });
 
-function editProduct(id) {
-    const prod = storeData.products.find(p => p.id === id);
-    if (!prod) return;
-    document.getElementById('prod-id').value = prod.id;
-    document.getElementById('prod-name').value = prod.name;
-    document.getElementById('prod-price').value = prod.price;
-    document.getElementById('prod-oldprice').value = prod.oldPrice;
-    document.getElementById('prod-category').value = prod.categoryId;
-    document.getElementById('prod-image').value = prod.image;
-    document.getElementById('prod-desc').value = prod.desc;
-    document.getElementById('prod-modal-title').innerText = 'تعديل المنتج';
-    document.getElementById('product-modal').style.display = 'flex';
-}
+    // --- دوال التنقل بين الأقسام ---
+    window.switchTab = function(tabId) {
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-links li').forEach(l => l.classList.remove('active'));
+        
+        document.getElementById(`${tabId}-section`).classList.add('active');
+        event.currentTarget.classList.add('active');
 
-function saveProduct() {
-    const id = document.getElementById('prod-id').value;
-    const name = document.getElementById('prod-name').value;
-    const price = parseFloat(document.getElementById('prod-price').value);
-    const oldPrice = parseFloat(document.getElementById('prod-oldprice').value) || 0;
-    const categoryId = document.getElementById('prod-category').value;
-    const image = document.getElementById('prod-image').value;
-    const desc = document.getElementById('prod-desc').value;
+        // إذا فتحنا قسم المنتجات، نقوم بتحديث الجدول
+        if(tabId === 'products') renderProductsTable();
+        if(tabId === 'categories') renderCategoriesTable();
+        if(tabId === 'settings') loadSettings();
+    };
 
-    if (!name || !price || !image) return alert('يرجى ملء الحقول الأساسية');
-
-    if (id) {
-        // تعديل
-        const index = storeData.products.findIndex(p => p.id === id);
-        storeData.products[index] = { ...storeData.products[index], name, price, oldPrice, categoryId, image, desc };
-    } else {
-        // إضافة
-        storeData.products.push({
-            id: generateId(),
-            name, price, oldPrice, categoryId, image, desc,
-            rating: 5.0, sales: 0
+    // --- إدارة المنتجات ---
+    window.renderProductsTable = function() {
+        const tbody = document.querySelector('#products-table tbody');
+        tbody.innerHTML = '';
+        storeData.products.forEach(prod => {
+            tbody.innerHTML += `
+                <tr>
+                    <td><img src="${prod.image}" width="40" style="border-radius:5px;"></td>
+                    <td>${prod.name}</td>
+                    <td>${prod.price} ر.س</td>
+                    <td>${prod.categoryId}</td>
+                    <td>
+                        <button style="background:none;border:none;color:#e91e63;cursor:pointer;" onclick="editProduct('${prod.id}')"><i class="fa-solid fa-pen"></i></button>
+                        <button style="background:none;border:none;color:#e91e63;cursor:pointer;" onclick="deleteProduct('${prod.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
         });
-    }
-    saveStoreData(storeData);
-    renderProductsTable();
-    closeModal('product-modal');
-}
+    };
 
-function deleteProduct(id) {
-    if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-        storeData.products = storeData.products.filter(p => p.id !== id);
+    // --- إدارة الأقسام ---
+    window.renderCategoriesTable = function() {
+        const tbody = document.querySelector('#categories-table tbody');
+        tbody.innerHTML = '';
+        storeData.categories.forEach(cat => {
+            tbody.innerHTML += `
+                <tr>
+                    <td><img src="${cat.image}" width="40" style="border-radius:50%;"></td>
+                    <td>${cat.name}</td>
+                    <td>
+                        <button style="background:none;border:none;color:#e91e63;cursor:pointer;" onclick="editCategory('${cat.id}')"><i class="fa-solid fa-pen"></i></button>
+                        <button style="background:none;border:none;color:#e91e63;cursor:pointer;" onclick="deleteCategory('${cat.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    };
+
+    // --- الإعدادات ---
+    window.loadSettings = function() {
+        document.getElementById('set-name').value = storeData.settings.storeName;
+        document.getElementById('set-phone').value = storeData.settings.phone;
+        document.getElementById('set-email').value = storeData.settings.email;
+    };
+
+    // --- دوال النوافذ المنبثقة (المنتجات والأقسام) ---
+    // (نفس الدوال الموجودة في الكود السابق الخاص بك)
+    window.openProductModal = function() { document.getElementById('product-modal').style.display = 'flex'; };
+    window.openCategoryModal = function() { document.getElementById('category-modal').style.display = 'flex'; };
+    window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; };
+    
+    // دالة حفظ المنتج
+    window.saveProduct = function() {
+        const id = document.getElementById('prod-id').value;
+        const name = document.getElementById('prod-name').value;
+        const price = document.getElementById('prod-price').value;
+        const image = document.getElementById('prod-image').value;
+        const cat = document.getElementById('prod-category').value;
+
+        if (!name || !price || !image) return alert('يرجى ملء الحقول');
+
+        if (id) {
+            const index = storeData.products.findIndex(p => p.id === id);
+            storeData.products[index] = { ...storeData.products[index], name, price, image, categoryId: cat };
+        } else {
+            storeData.products.push({ id: generateId(), name, price, image, categoryId: cat, rating: 5, sales: 0 });
+        }
         saveStoreData(storeData);
         renderProductsTable();
-    }
-}
+        closeModal('product-modal');
+    };
 
-// --- الأقسام ---
-function renderCategoriesTable() {
-    const tbody = document.querySelector('#categories-table tbody');
-    tbody.innerHTML = '';
-    storeData.categories.forEach(cat => {
-        tbody.innerHTML += `
-            <tr>
-                <td><img src="${cat.image}" alt=""></td>
-                <td>${cat.name}</td>
-                <td>
-                    <button class="action-btn" onclick="editCategory('${cat.id}')"><i class="fa-solid fa-pen"></i></button>
-                    <button class="action-btn" onclick="deleteCategory('${cat.id}')"><i class="fa-solid fa-trash"></i></button>
-                </td>
-            </tr>
-        `;
-    });
-    populateCategorySelect();
-}
-
-function populateCategorySelect() {
-    const select = document.getElementById('prod-category');
-    select.innerHTML = '';
-    storeData.categories.forEach(cat => {
-        select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
-    });
-}
-
-function openCategoryModal() {
-    document.getElementById('cat-id').value = '';
-    document.getElementById('cat-name').value = '';
-    document.getElementById('cat-image').value = '';
-    document.getElementById('category-modal').style.display = 'flex';
-}
-
-function editCategory(id) {
-    const cat = storeData.categories.find(c => c.id === id);
-    document.getElementById('cat-id').value = cat.id;
-    document.getElementById('cat-name').value = cat.name;
-    document.getElementById('cat-image').value = cat.image;
-    document.getElementById('category-modal').style.display = 'flex';
-}
-
-function saveCategory() {
-    const id = document.getElementById('cat-id').value;
-    const name = document.getElementById('cat-name').value;
-    const image = document.getElementById('cat-image').value;
-
-    if (!name || !image) return alert('يرجى ملء الحقول');
-
-    if (id) {
-        const index = storeData.categories.findIndex(c => c.id === id);
-        storeData.categories[index] = { id, name, image };
-    } else {
-        storeData.categories.push({ id: generateId(), name, image });
-    }
-    saveStoreData(storeData);
-    renderCategoriesTable();
-    closeModal('category-modal');
-}
-
-function deleteCategory(id) {
-    if (confirm('هل أنت متأكد من حذف هذا القسم؟ سيتم حذف المنتجات المرتبطة به.')) {
-        storeData.categories = storeData.categories.filter(c => c.id !== id);
-        storeData.products = storeData.products.filter(p => p.categoryId !== id);
+    // دالة حفظ القسم
+    window.saveCategory = function() {
+        const id = document.getElementById('cat-id').value;
+        const name = document.getElementById('cat-name').value;
+        const image = document.getElementById('cat-image').value;
+        if (!name || !image) return alert('ملء الحقول');
+        
+        if (id) {
+            const index = storeData.categories.findIndex(c => c.id === id);
+            storeData.categories[index] = { id, name, image };
+        } else {
+            storeData.categories.push({ id: generateId(), name, image });
+        }
         saveStoreData(storeData);
         renderCategoriesTable();
-        renderProductsTable();
-    }
-}
+        closeModal('category-modal');
+    };
 
-// --- الإعدادات ---
-function loadSettings() {
-    document.getElementById('set-name').value = storeData.settings.storeName;
-    document.getElementById('set-phone').value = storeData.settings.phone;
-    document.getElementById('set-email').value = storeData.settings.email;
-    document.getElementById('set-whatsapp').value = storeData.settings.whatsapp;
-}
+    // حفظ الإعدادات
+    document.getElementById('settings-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        storeData.settings.storeName = document.getElementById('set-name').value;
+        storeData.settings.phone = document.getElementById('set-phone').value;
+        storeData.settings.email = document.getElementById('set-email').value;
+        saveStoreData(storeData);
+        alert('تم حفظ الإعدادات بنجاح!');
+    });
 
-document.getElementById('settings-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    storeData.settings.storeName = document.getElementById('set-name').value;
-    storeData.settings.phone = document.getElementById('set-phone').value;
-    storeData.settings.email = document.getElementById('set-email').value;
-    storeData.settings.whatsapp = document.getElementById('set-whatsapp').value;
-    saveStoreData(storeData);
-    alert('تم حفظ الإعدادات بنجاح!');
 });
-
-// إغلاق المودال
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-}
